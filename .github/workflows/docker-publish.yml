@@ -12,7 +12,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: your-github-username/devops-grind
+  IMAGE_NAME: panwarharsh15/devops-grind
 
 jobs:
   quality-check:
