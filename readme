@@ -1,1 +1,13 @@
-readme.md
+GO TEST SERVER:
+
+It is basically a go server where you tst some APIs like /health, /name like that.
+and Our mainly use of this server to build a dockerfile or multisatge dockerfile where we can optimize the size of an image. and after that we are going to build a workflow where
+we ust trigger the worflow if any one just push any changes to repo. 
+
+How to run locally :
+-- first clone the repo --
+1. git clone https://github.com/panwarharsh15/devops-grind
+2  go run main.go 
+3. test it on your localhost localhost:3000/health or /hello
+
+
