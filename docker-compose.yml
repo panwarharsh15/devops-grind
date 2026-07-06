@@ -1,0 +1,13 @@
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: devops-grind:latest
+    container_name: go-http-container
+    ports:
+      - "3000:3000"
+    environment:
+      - Port=3000
+    restart: unless-stopped
+  
