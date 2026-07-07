@@ -1,3 +1,4 @@
+
 package main
 
 import (
@@ -76,6 +77,43 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func readyHandler(w http.ResponseWriter, r *http.Request){
+	if r.Method!=r.MethodGet{
+		http.Error(w, "Method is not allowed",http.StatusMethodNotAllowed)
+		return
+	}
+	checks := map[string]string{
+		"http_server": "ok",
+	}
+	respond(w,http.StatusOK,APIResponse{
+		Status:    "ok",
+		Message:   "server is ready",
+		Data:      checks,
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+	})
+}
+func metricsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	uptimeSeconds := time.Since(startedAt).Seconds()
+	totalRequests := atomic.LoadUint64(&requestsAll)
+	uptimeSeconds := time.Since(startedAt).Seconds()
+	totalRequests := atomic.LoadUint64(&requestsAll)
+
+	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
+
+	fmt.Fprintf(w, "# HELP devops_grind_uptime_seconds Application uptime in seconds\n")
+	fmt.Fprintf(w, "# TYPE devops_grind_uptime_seconds gauge\n")
+	fmt.Fprintf(w, "devops_grind_uptime_seconds %.0f\n", uptimeSeconds)
+
+	fmt.Fprintf(w, "# HELP devops_grind_requests_total Total HTTP requests served\n")
+	fmt.Fprintf(w, "# TYPE devops_grind_requests_total counter\n")
+	fmt.Fprintf(w, "devops_grind_requests_total %d\n", totalRequests)
+
+}
 func main() {
 	// PORT env var lets us override the port — useful in different environments.
 	port := os.Getenv("PORT")

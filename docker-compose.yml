@@ -10,4 +10,10 @@ services:
     environment:
       - Port=3000
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
   
