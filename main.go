@@ -1,21 +1,20 @@
-
 package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"time"
-	"fmt"
 	"sync/atomic"
+	"time"
 )
-
 
 var (
-	startedAt    = time.Now().UTC()
+	startedAt   = time.Now().UTC()
 	requestsAll uint64
 )
+
 // APIResponse is the standard JSON shape every endpoint returns.
 // json tags control the exact key names in the response.
 type APIResponse struct {
@@ -84,15 +83,15 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func readyHandler(w http.ResponseWriter, r *http.Request){
-	if r.Method!=http.MethodGet{
-		http.Error(w, "Method is not allowed",http.StatusMethodNotAllowed)
+func readyHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	checks := map[string]string{
 		"http_server": "ok",
 	}
-	respond(w,http.StatusOK,APIResponse{
+	respond(w, http.StatusOK, APIResponse{
 		Status:    "ok",
 		Message:   "server is ready",
 		Data:      checks,
@@ -107,7 +106,6 @@ func metricsHandler(w http.ResponseWriter, r *http.Request) {
 
 	uptimeSeconds := time.Since(startedAt).Seconds()
 	totalRequests := atomic.LoadUint64(&requestsAll)
-	
 
 	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
 
@@ -134,7 +132,7 @@ func main() {
 	mux.HandleFunc("/hello", helloHandler)
 	mux.HandleFunc("/echo", echoHandler)
 	mux.HandleFunc("/ready", readyHandler)
-    mux.HandleFunc("/metrics", metricsHandler)
+	mux.HandleFunc("/metrics", metricsHandler)
 
 	log.Printf("server starting on :%s", port)
 	if err := http.ListenAndServe(":"+port, mux); err != nil {
