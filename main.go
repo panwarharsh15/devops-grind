@@ -13,6 +13,8 @@ import (
 var (
 	startedAt   = time.Now().UTC()
 	requestsAll uint64
+	version = "dev"
+	commit  = "local"
 )
 
 // APIResponse is the standard JSON shape every endpoint returns.
@@ -31,6 +33,22 @@ func respond(w http.ResponseWriter, statusCode int, payload APIResponse) {
 	json.NewEncoder(w).Encode(payload)
 }
 
+func versionHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	respond(w, http.StatusOK, APIResponse{
+		Status:  "ok",
+		Message: "version info",
+		Data: map[string]string{
+			"version": version,
+			"commit":  commit,
+		},
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+	})
+}
 // GET /health
 // Kubernetes uses this as a liveness probe.
 // If this returns 200, the pod is considered healthy.
@@ -133,6 +151,7 @@ func main() {
 	mux.HandleFunc("/echo", echoHandler)
 	mux.HandleFunc("/ready", readyHandler)
 	mux.HandleFunc("/metrics", metricsHandler)
+	mux.HandleFunc("/version", versionHandler)
 
 	log.Printf("server starting on :%s", port)
 	if err := http.ListenAndServe(":"+port, mux); err != nil {
