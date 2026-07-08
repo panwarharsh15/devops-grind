@@ -13,8 +13,8 @@ import (
 var (
 	startedAt   = time.Now().UTC()
 	requestsAll uint64
-	version = "dev"
-	commit  = "local"
+	version     = "dev"
+	commit      = "local"
 )
 
 // APIResponse is the standard JSON shape every endpoint returns.
@@ -49,6 +49,7 @@ func versionHandler(w http.ResponseWriter, r *http.Request) {
 		Timestamp: time.Now().UTC().Format(time.RFC3339),
 	})
 }
+
 // GET /health
 // Kubernetes uses this as a liveness probe.
 // If this returns 200, the pod is considered healthy.
