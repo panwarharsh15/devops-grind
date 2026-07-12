@@ -138,10 +138,10 @@ func metricsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func countingMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        atomic.AddUint64(&requestsAll, 1)
-        next.ServeHTTP(w, r)
-    })
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		atomic.AddUint64(&requestsAll, 1)
+		next.ServeHTTP(w, r)
+	})
 }
 func main() {
 	// PORT env var lets us override the port — useful in different environments.
