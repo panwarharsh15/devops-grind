@@ -137,6 +137,12 @@ func metricsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "devops_grind_requests_total %d\n", totalRequests)
 
 }
+func countingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		atomic.AddUint64(&requestsAll, 1)
+		next.ServeHTTP(w, r)
+	})
+}
 func main() {
 	// PORT env var lets us override the port — useful in different environments.
 	port := os.Getenv("PORT")
@@ -155,7 +161,7 @@ func main() {
 	mux.HandleFunc("/version", versionHandler)
 
 	log.Printf("server starting on :%s", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
+	if err := http.ListenAndServe(":"+port, countingMiddleware(mux)); err != nil {
 		log.Fatalf("server crashed: %v", err)
 	}
 }

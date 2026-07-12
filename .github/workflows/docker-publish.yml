@@ -80,7 +80,17 @@ jobs:
 
       - name: Wait for app
         run: |
-          sleep 5
+          for i in $(seq 1 10); do
+            if curl -sf http://localhost:3000/health; then
+            echo "App is ready"
+            exit 0
+            fi
+            echo "Attempt $i failed, retrying in 3s..."
+            sleep 3
+          done
+          echo "App never became ready"
+          exit 1
+
 
       - name: Test health endpoint
         run: |
